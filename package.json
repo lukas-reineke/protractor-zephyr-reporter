@@ -1,0 +1,28 @@
+{
+  "name": "protractor-zephyr-reporter",
+  "version": "1.0.0",
+  "description": "Zephyr reporter for Jasmine and Protractor.",
+  "main": "zephyr-reporter.js",
+  "keywords": [
+    "jasmine",
+    "protractor",
+    "reporter",
+    "test",
+    "functional testing",
+    "end2end",
+    "jira",
+    "zephyr",
+    "zapi"
+  ],
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/lukas-reineke/protractor-zephyr-reporter"
+  },
+  "author": "Lukas Reineke <lukas.reineke@protonmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "popsicle": "^9.1.0",
+    "popsicle-basic-auth": "^1.0.0",
+    "stream-buffers": "^3.0.1"
+  }
+}
