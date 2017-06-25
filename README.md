@@ -136,3 +136,5 @@ describe('test case description @111111', function() {
 });
 ```
 
+![Jira test steps](https://github.com/lukas-reineke/protractor-zephyr-reporter/raw/master/screenshots/screenshot-1.png "Jira test steps")
+
