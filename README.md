@@ -1,4 +1,4 @@
-# protractor-zephyr-reporter
+# protractor-zephyr-reporter [![npm version](https://badge.fury.io/js/protractor-zephyr-reporter.svg)](https://badge.fury.io/js/protractor-zephyr-reporter)
 
 Generates [Zephyr for Jira](https://www.getzephyr.com/products/zephyr-for-jira)
 test executions using
