@@ -108,3 +108,31 @@ exports.config = {
 
  This is the Jira api url
 
+# Test Setup
+
+A test case is represented by a describe block.
+The test case ID has to be added at the end of the description with an @
+symbol.
+
+A test step is represented by an it block.
+The test step ID has to be added at the end of the description with an @
+symbol.
+
+If you want to use image comparison, the name has to be the same as the test
+step ID.
+
+```javascript
+describe('test case description @111111', function() {
+
+    it('should do something @222222', function() {
+        expect(2).toEqual(2);
+    });
+
+    it('should do something else @333333', function() {
+        expect(3).toEqual(3);
+        expect(browser.params.imageComparison.checkElement((element), '333333')).toBeLessThan(3.5);
+    });
+
+});
+```
+
