@@ -1,6 +1,6 @@
 {
   "name": "protractor-zephyr-reporter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zephyr reporter for Jasmine and Protractor.",
   "main": "zephyr-reporter.js",
   "keywords": [
@@ -14,13 +14,13 @@
     "zephyr",
     "zapi"
   ],
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/lukas-reineke/protractor-zephyr-reporter"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukas-reineke/protractor-zephyr-reporter"
   },
   "author": "Lukas Reineke <lukas.reineke@protonmail.com>",
   "contributors": [
-      "Dimitri Rybak <kontakt@dimitri-rybak.de>"
+    "Dimitri Rybak <kontakt@dimitri-rybak.de>"
   ],
   "license": "MIT",
   "dependencies": {
