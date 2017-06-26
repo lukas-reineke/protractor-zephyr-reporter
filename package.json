@@ -1,6 +1,6 @@
 {
   "name": "protractor-zephyr-reporter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Zephyr reporter for Jasmine and Protractor.",
   "main": "zephyr-reporter.js",
   "keywords": [
