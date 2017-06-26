@@ -19,6 +19,9 @@
     "url" : "https://github.com/lukas-reineke/protractor-zephyr-reporter"
   },
   "author": "Lukas Reineke <lukas.reineke@protonmail.com>",
+  "contributors": [
+      "Dimitri Rybak <kontakt@dimitri-rybak.de>"
+  ],
   "license": "MIT",
   "dependencies": {
     "popsicle": "^9.1.0",

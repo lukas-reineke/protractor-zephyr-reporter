@@ -83,42 +83,59 @@ exports.config = {
  If you have protractor-image-comparison configured, the comparison images will also be
  uploaded.
 
-* `version`
+* `boardId`
 
- The release version in Jira, the test will get attached to. If no version is specified,
- the test will be assigned to Ad hoc.
- The version has to exist before it is used, currently this reporter does not
- create versions.
+ The Jira board Id. You need to board ID to create a new cycle. If no new cycle
+ can be created, the test will be an unscheduled execution assigned to Ad hoc.
+ You can get the board ID with this API call.
+ ```bash
+ curl https://USERNAME:PASSWORD@jira.com/rest/agile/latest/board
+ ```
 
 * `projectId` (required)
 
  The Jira project ID.
+ You can get the project ID with this API call.
+ ```bash
+ curl https://USERNAME:PASSWORD@jira.com/rest/agile/latest/board/BOARD-ID/project
+ ```
 
-* `boardId` (required)
+* `version`
 
- The Jira board Id
+ The release version in Jira, the test will get attached to. If no version is specified,
+ the test will be an unscheduled execution.
+ The version has to exist before it is used, currently this reporter does not
+ create versions. You need the board ID for this to work as well.
 
 * `jiraUser` (required)
 * `jiraPassword` (required)
 * `zapiUrl` (required)
 
- The Jira zapi url
+ This is your Jira zapi url
 
 * `jiraUrl` (required)
 
- This is the Jira api url
+ This is your Jira api url
 
 # Test Setup
 
 A test case is represented by a describe block.
 The test case ID has to be added at the end of the description with an @
 symbol.
+You can get the test case ID with this API call.
+```bash
+curl https://USERNAME:PASSWORD@jira.com/rest/agile/latest/issue/TICKET-ID
+```
 
 A test step is represented by an it block.
 The test step ID has to be added at the end of the description with an @
 symbol.
+You can get the test step IDs with this API call.
+```bash
+curl https://USERNAME:PASSWORD@jira.com/rest/zapi/latest/teststep/TEST-CASE-ID
+```
 
-If you want to use image comparison, the name has to be the same as the test
+If you want to use image comparison, the tag has to be the same as the test
 step ID.
 
 ```javascript
@@ -137,4 +154,14 @@ describe('test case description @111111', function() {
 ```
 
 ![Jira test steps](https://github.com/lukas-reineke/protractor-zephyr-reporter/raw/master/screenshots/screenshot-1.png "Jira test steps")
+
+# References
+
+#### Jira API documentation
+
+https://docs.atlassian.com/jira-software/REST/cloud/
+
+#### Zapi API documentaion
+
+http://docs.getzephyr.apiary.io
 

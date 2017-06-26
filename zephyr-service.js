@@ -22,40 +22,54 @@ const ZephyrService = (options) => {
 
     this.createCycle = (name, callback) => {
 
-        let promises = ['getActiveSprintId'];
+        let promises = [];
+        const _createCycle = (response) => {
+            popsicle.request({
+                method: 'POST',
+                url: options.zapiUrl + '/cycle',
+                body: {
+                    name,
+                    startDate: getDate(),
+                    endDate: getDate(),
+                    projectId: options.projectId,
+                    versionId: response[1] || '-1',
+                    sprintId: response[0] || '-1'
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .use(popsicle.plugins.parse('json'))
+                .use(auth(options.jiraUser, options.jiraPassword))
+                .then((res) => {
+                    callback(res.body.id);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        };
 
-        if (options.version) {
-            promises.push('getVersionId');
+        if (options.boardId && options.version) {
+            promises = [
+                'getActiveSprintId',
+                'getVersionId'
+            ];
+        } else if (options.boardId) {
+            promises = [
+                'getActiveSprintId'
+            ];
         }
 
-        Promise.all(promises.map((func) => {
-            return JiraService[func]();
-        }))
-            .then((response) => {
-                popsicle.request({
-                    method: 'POST',
-                    url: options.zapiUrl + '/cycle',
-                    body: {
-                        name,
-                        startDate: getDate(),
-                        endDate: getDate(),
-                        projectId: options.projectId,
-                        versionId: response[1] || '-1',
-                        sprintId: response[0]
-                    },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .use(popsicle.plugins.parse('json'))
-                    .use(auth(options.jiraUser, options.jiraPassword))
-                    .then((res) => {
-                        callback(res.body.id);
-                    })
-                    .catch(function(error) {
-                        console.error(error);
-                    });
-            });
+        if (promises.length > 0) {
+            Promise.all(promises.map((func) => {
+                return JiraService[func]();
+            }))
+                .then((response) => {
+                    _createCycle(response);
+                });
+        } else {
+            _createCycle([-1, -1]);
+        }
 
     };
 
@@ -77,7 +91,7 @@ const ZephyrService = (options) => {
             .then((res) => {
                 callback(Object.keys(res.body)[0]);
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
 
@@ -102,7 +116,7 @@ const ZephyrService = (options) => {
                     }
                 }
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
     };
@@ -123,7 +137,7 @@ const ZephyrService = (options) => {
             .then(() => {
                 callback();
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
     };
@@ -144,7 +158,7 @@ const ZephyrService = (options) => {
             .then(() => {
                 callback();
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
     };
@@ -170,7 +184,7 @@ const ZephyrService = (options) => {
             .then(() => {
                 callback();
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
     };
@@ -195,7 +209,7 @@ const ZephyrService = (options) => {
             .then(() => {
                 callback();
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
     };

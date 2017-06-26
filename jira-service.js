@@ -1,7 +1,7 @@
 const popsicle = require('popsicle');
 const auth = require('popsicle-basic-auth');
 
-const JiraService = function(options) {
+const JiraService = (options) => {
 
     this.getActiveSprintId = () => {
         return popsicle.request({
@@ -22,7 +22,7 @@ const JiraService = function(options) {
                     return '-1';
                 }
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
 
@@ -47,7 +47,7 @@ const JiraService = function(options) {
                 }
                 console.error('version ' + options.version + ' not found.');
             })
-            .catch(function(error) {
+            .catch((error) => {
                 console.error(error);
             });
     };
