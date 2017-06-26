@@ -5,11 +5,11 @@ const ZephyrReporter = (options, onPrepareDefer, onCompleteDefer, browser) => {
 
     const ZephyrService = require('./zephyr-service')(options);
 
-    const buildImageName = (specId) => {
+    const buildImageName = (stepId) => {
         let imageName = './';
         imageName += browser.params.imageComparison.diffFolder;
         imageName += '/';
-        imageName += specId;
+        imageName += stepId;
         imageName += '-';
         imageName += browser.params.imageComparison.browserName;
         imageName += '-';
@@ -90,7 +90,7 @@ const ZephyrReporter = (options, onPrepareDefer, onCompleteDefer, browser) => {
                     });
                 }));
 
-                if (browser.params.imageComparison && fs.existsSync(buildImageName(specId))) {
+                if (browser.params.imageComparison && fs.existsSync(buildImageName(stepId))) {
                     specDonePromises.push(new Promise((resolve) => {
                         ZephyrService.addAttachment(stepId, buildImageName(stepId), () => {
                             resolve();
