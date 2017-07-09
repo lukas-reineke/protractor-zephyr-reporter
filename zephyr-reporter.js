@@ -44,7 +44,7 @@ const ZephyrReporter = (options, onPrepareDefer, onCompleteDefer, browser) => {
         });
 
     this.suiteStarted = (suite) => {
-        var issueId = suite.description.split('@')[1];
+        const issueId = suite.description.split('@')[1];
         ZephyrService.createExecution(globals.cycleId, issueId, (executionId) => {
             globals.executionId = executionId;
         });

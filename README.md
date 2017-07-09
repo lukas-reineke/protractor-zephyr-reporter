@@ -19,7 +19,7 @@ npm install --save-dev protractor-zephyr-reporter
 ```javascript
 const ZephyrReporter = require('protractor-zephyr-reporter');
 
-// Jasmine dose not support promises for reporters, but protractor does for
+// Jasmine does not support promises for reporters, but protractor does for
 // onPrepare and onComplete. We can use that to make the reporter async as
 // well. Generate two promises on onPrepare and add them as arguments to the
 // reporter.
