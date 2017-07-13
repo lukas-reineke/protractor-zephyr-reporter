@@ -23,7 +23,7 @@ const JiraService = (options) => {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
 
     };
@@ -45,10 +45,10 @@ const JiraService = (options) => {
                         return res.body.values[i].id;
                     }
                 }
-                console.error('version ' + options.version + ' not found.');
+                throw new Error();
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
     };
 

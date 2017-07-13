@@ -45,7 +45,7 @@ const ZephyrService = (options) => {
                     callback(res.body.id);
                 })
                 .catch((error) => {
-                    console.error(error);
+                    throw new Error(error);
                 });
         };
 
@@ -92,7 +92,7 @@ const ZephyrService = (options) => {
                 callback(Object.keys(res.body)[0]);
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
 
     };
@@ -117,7 +117,7 @@ const ZephyrService = (options) => {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
     };
 
@@ -138,7 +138,7 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
     };
 
@@ -159,7 +159,7 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
     };
 
@@ -185,7 +185,7 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
     };
 
@@ -210,7 +210,7 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                console.error(error);
+                throw new Error(error);
             });
     };
 
