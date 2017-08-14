@@ -20,7 +20,7 @@ const ZephyrService = (options) => {
 
     const JiraService = require('./jira-service')(options);
 
-    this.createCycle = (name, callback) => {
+    this.createCycle = (name, callback, errorCallback) => {
 
         let promises = [];
         const _createCycle = (response) => {
@@ -45,7 +45,7 @@ const ZephyrService = (options) => {
                     callback(res.body.id);
                 })
                 .catch((error) => {
-                    throw new Error(error);
+                    errorCallback(error);
                 });
         };
 
@@ -73,7 +73,7 @@ const ZephyrService = (options) => {
 
     };
 
-    this.createExecution = (cycleId, issueId, callback) => {
+    this.createExecution = (cycleId, issueId, callback, errorCallback) => {
         popsicle.request({
             method: 'POST',
             url: options.zapiUrl + '/execution',
@@ -92,13 +92,13 @@ const ZephyrService = (options) => {
                 callback(Object.keys(res.body)[0]);
             })
             .catch((error) => {
-                throw new Error(error);
+                errorCallback(error);
             });
 
     };
 
 
-    this.getStepId = (executionId, stepId, callback) => {
+    this.getStepId = (executionId, stepId, callback, errorCallback) => {
         popsicle.request({
             method: 'GET',
             url: options.zapiUrl + '/stepResult?executionId=' + executionId,
@@ -117,7 +117,7 @@ const ZephyrService = (options) => {
                 }
             })
             .catch((error) => {
-                throw new Error(error);
+                errorCallback(error);
             });
     };
 
@@ -125,27 +125,6 @@ const ZephyrService = (options) => {
         popsicle.request({
             method: 'PUT',
             url: options.zapiUrl + '/stepResult/' + stepId,
-            body: {
-                status,
-            },
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
-            .then(() => {
-                callback();
-            })
-            .catch((error) => {
-                throw new Error(error);
-            });
-    };
-
-    this.updateExecution = (executionId, status, callback) => {
-        popsicle.request({
-            method: 'PUT',
-            url: options.zapiUrl + '/execution/' + executionId + '/execute',
             body: {
                 status
             },
@@ -163,11 +142,32 @@ const ZephyrService = (options) => {
             });
     };
 
-    this.addAttachmentBuffered = (stepId, img, callback) => {
+    this.updateExecution = (executionId, status, callback, errorCallback) => {
+        popsicle.request({
+            method: 'PUT',
+            url: options.zapiUrl + '/execution/' + executionId + '/execute',
+            body: {
+                status
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .use(popsicle.plugins.parse('json'))
+            .use(auth(options.jiraUser, options.jiraPassword))
+            .then(() => {
+                callback();
+            })
+            .catch((error) => {
+                errorCallback(error);
+            });
+    };
+
+    this.addAttachmentBuffered = (stepId, img, callback, errorCallback) => {
         const entityType = 'STEPRESULT';
         const form = popsicle.form();
         form.append('file', img, {
-            filename: stepId + '_screenshot.png',
+            filename: stepId + '_screenshot.png'
         });
 
         popsicle.request({
@@ -185,11 +185,11 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                throw new Error(error);
+                errorCallback(error);
             });
     };
 
-    this.addAttachment = (stepId, img, callback) => {
+    this.addAttachment = (stepId, img, callback, errorCallback) => {
         const entityType = 'STEPRESULT';
         const form = popsicle.form({
             file: fs.createReadStream(img)
@@ -210,7 +210,7 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                throw new Error(error);
+                errorCallback(error);
             });
     };
 

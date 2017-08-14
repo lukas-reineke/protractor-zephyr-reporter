@@ -46,6 +46,7 @@ exports.config = {
         onCompleteDefer = protractor.promise.defer();
 
         const options = {
+            'disabled': false,
             'screenshot': 'fail',
             'version': '1.0',
             'projectId': 'XXX',
@@ -70,6 +71,10 @@ exports.config = {
 ```
 
 # Options
+* `disabled`
+
+ Set to true to disable the reporter. Default is false.
+
 * `screenshot`
 
  protractor-zephyr-reporter can attach screenshots to test executions. Default
