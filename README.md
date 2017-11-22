@@ -55,6 +55,10 @@ exports.config = {
             'jiraPassword': 'XXX',
             'zapiUrl': 'https://jira.com/rest/zapi/latest',
             'jiraUrl': 'https://jira.com/rest/agile/latest'
+            // only for zaphyr cloud
+            // 'jwtToken': 'JWT xxx',
+            // 'zapiAccessKey': 'xxx',
+            // 'zapiUrl': 'https://jira.com/connect/public/rest/api/1.0/',
         };
 
         // add the reporter

@@ -36,11 +36,15 @@ const ZephyrService = (options) => {
                     sprintId: response[0] || '-1'
                 },
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': options.jwtToken,
+                    'zapiAccessKey': options.zapiAccessKey
                 }
             })
-                .use(popsicle.plugins.parse('json'))
-                .use(auth(options.jiraUser, options.jiraPassword))
+                .use([
+                    popsicle.plugins.parse('json'),
+                    ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+                ])
                 .then((res) => {
                     callback(res.body.id);
                 })
@@ -83,11 +87,15 @@ const ZephyrService = (options) => {
                 projectId: options.projectId
             },
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': options.jwtToken,
+                'zapiAccessKey': options.zapiAccessKey
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+            ])
             .then((res) => {
                 callback(Object.keys(res.body)[0]);
             })
@@ -101,19 +109,38 @@ const ZephyrService = (options) => {
     this.getStepId = (executionId, stepId, callback, errorCallback) => {
         popsicle.request({
             method: 'GET',
-            url: options.zapiUrl + '/stepResult?executionId=' + executionId,
+            url: (() => {
+                if (options.jwtToken) {
+                    return options.zapiUrl + '/stepresult/search?executionId=' + executionId;
+                }
+                return options.zapiUrl + '/stepResult?executionId=' + executionId;
+            })(),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': options.jwtToken,
+                'zapiAccessKey': options.zapiAccessKey
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+            ])
             .then((res) => {
+                if (options.jwtToken) {
+                    res.body = res.body.stepResults;
+                } else {
+                    res.body = (res.body.length ? res.body : [ res.body ]);
+                }
+                let found = false;
                 for (let step of res.body) {
                     if (String(step.stepId) === stepId) {
+                        found = true;
                         callback(step.id);
                         break;
                     }
+                }
+                if (!found) {
+                    errorCallback(`spec ${stepId} not found`);
                 }
             })
             .catch((error) => {
@@ -122,18 +149,31 @@ const ZephyrService = (options) => {
     };
 
     this.updateTestStep = (stepId, status, callback) => {
+        console.log('updateTestStep');
         popsicle.request({
             method: 'PUT',
-            url: options.zapiUrl + '/stepResult/' + stepId,
-            body: {
-                status
-            },
+            url: (() => {
+                if (options.jwtToken) {
+                    return options.zapiUrl + '/stepresult/' + stepId;
+                }
+                return options.zapiUrl + '/stepResult/' + stepId;
+            })(),
+            body: (() => {
+                if (options.jwtToken) {
+                    return { status };
+                }
+                return { status: { id: status } };
+            })(),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': options.jwtToken,
+                'zapiAccessKey': options.zapiAccessKey
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+            ])
             .then(() => {
                 callback();
             })
@@ -145,16 +185,28 @@ const ZephyrService = (options) => {
     this.updateExecution = (executionId, status, callback, errorCallback) => {
         popsicle.request({
             method: 'PUT',
-            url: options.zapiUrl + '/execution/' + executionId + '/execute',
-            body: {
-                status
-            },
+            url: (() => {
+                if (options.jwtToken) {
+                    return options.zapiUrl + '/execution/' + executionId;
+                }
+                return options.zapiUrl + '/execution/' + executionId + '/execute';
+            })(),
+            body: (() => {
+                if (options.jwtToken) {
+                    return { status };
+                }
+                return { status: { id: status } };
+            })(),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': options.jwtToken,
+                'zapiAccessKey': options.zapiAccessKey
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+            ])
             .then(() => {
                 callback();
             })
@@ -177,10 +229,14 @@ const ZephyrService = (options) => {
             headers: {
                 'X-Atlassian-Token': 'nocheck',
                 'Content-Type': 'multipart/form-data',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': options.jwtToken,
+                'zapiAccessKey': options.zapiAccessKey
             }
         })
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+            ])
             .then(() => {
                 callback();
             })
@@ -202,10 +258,14 @@ const ZephyrService = (options) => {
             headers: {
                 'X-Atlassian-Token': 'nocheck',
                 'Content-Type': 'multipart/form-data',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': options.jwtToken,
+                'zapiAccessKey': options.zapiAccessKey
             }
         })
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                ...(!options.jwtToken ? [ auth(options.jiraUser, options.jiraPassword) ] : [])
+            ])
             .then(() => {
                 callback();
             })
