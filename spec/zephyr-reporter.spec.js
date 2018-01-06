@@ -17,6 +17,17 @@ describe(`ZephyrReporter`, () => {
                         }
                     });
                 });
+            },
+            takeScreenshot: () => {
+                return new Promise((resolve) => {
+                    resolve('11');
+                });
+            },
+            params: {
+                diffFolder: 'diffFolder',
+                browserName: 'browserName',
+                browserWidth: 'browserWidth',
+                browserHeight: 'browserHeight',
             }
         };
         onPrepareDefer = {
@@ -247,6 +258,350 @@ describe(`ZephyrReporter`, () => {
 
         });
 
+
+        it(`should resolve disabled specs`, (done) => {
+
+            const nockCycle = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/cycle')
+                .reply(() => {
+                    return { id: '1212' };
+                });
+
+            const nockExecution = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/execution')
+                .reply((path, res) => {
+                    result = res
+                    return {'8888': 1};
+                });
+
+            const zephyrReporter = ZephyrReporter({
+                projectId: 'mock',
+                zapiUrl: 'http://zapi-url.com',
+                jiraUrl: 'http://jira-url.com'
+            }, onPrepareDefer, onCompleteDefer, browser);
+
+            nockCycle.on('replied', () => {
+                setTimeout(() => {
+                    zephyrReporter.suiteStarted({
+                        description: 'mock@123'
+                    })
+                });
+            });
+
+            nockExecution.on('replied', () => {
+                setTimeout(() => {
+                    const spec = {
+                        id: 1,
+                        status: 'disabled'
+                    };
+                    zephyrReporter.specStarted(spec);
+                    zephyrReporter.specDone(spec);
+                    done();
+                });
+            });
+
+        });
+
+
+        it(`should get the stepId and set the status of the step`, (done) => {
+
+            let result;
+
+            const nockCycle = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/cycle')
+                .reply(() => {
+                    return { id: '1212' };
+                });
+
+            const nockExecution = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/execution')
+                .reply((path, res) => {
+                    return {'8888': 1};
+                });
+
+            const nockStepId = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .get('/stepResult?executionId=8888')
+                .reply(() => {
+                    return [{
+                        stepId: '4545',
+                        id: '99'
+                    }];
+                });
+
+            const nockUpdateTestStep = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .put('/stepResult/99')
+                .reply((path, res) => {
+                    result = res;
+                });
+
+            const zephyrReporter = ZephyrReporter({
+                projectId: 'mock',
+                zapiUrl: 'http://zapi-url.com',
+                jiraUrl: 'http://jira-url.com'
+            }, onPrepareDefer, onCompleteDefer, browser);
+
+            nockCycle.on('replied', () => {
+                setTimeout(() => {
+                    zephyrReporter.suiteStarted({
+                        description: 'mock@123'
+                    })
+                });
+            });
+
+            nockExecution.on('replied', () => {
+                setTimeout(() => {
+                    const spec = {
+                        id: 1,
+                        status: 'passed',
+                        description: 'mock@4545'
+                    };
+                    zephyrReporter.specStarted(spec);
+                    zephyrReporter.specDone(spec);
+                });
+            });
+
+            nockUpdateTestStep.on('replied', () => {
+                setTimeout(() => {
+                    expect(result).toEqual({ status: '1' });
+                    done();
+                });
+            });
+
+        });
+
+
+        it(`should attach a screenshot if the spec faild`, (done) => {
+
+            spyOn(browser, 'takeScreenshot').andCallThrough();
+
+            let result;
+
+            const nockCycle = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/cycle')
+                .reply(() => {
+                    return { id: '1212' };
+                });
+
+            const nockExecution = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/execution')
+                .reply((path, res) => {
+                    return {'8888': 1};
+                });
+
+            const nockStepId = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .get('/stepResult?executionId=8888')
+                .reply((path) => {
+                    return [{
+                        stepId: '4545',
+                        id: '99'
+                    }];
+                });
+
+            const nockUpdateTestStep = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .put('/stepResult/99')
+                .reply((path, res) => {
+                    result = res;
+                });
+
+            const nockAddAttachmentBuffered = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/attachment?entityId=99&entityType=STEPRESULT')
+                .reply((path, res) => {
+                    result = res;
+                });
+
+            const zephyrReporter = ZephyrReporter({
+                projectId: 'mock',
+                zapiUrl: 'http://zapi-url.com',
+                jiraUrl: 'http://jira-url.com'
+            }, onPrepareDefer, onCompleteDefer, browser);
+
+            nockCycle.on('replied', () => {
+                setTimeout(() => {
+                    zephyrReporter.suiteStarted({
+                        description: 'mock@123'
+                    })
+                });
+            });
+
+            nockExecution.on('replied', () => {
+                setTimeout(() => {
+                    const spec = {
+                        id: 1,
+                        status: 'failed',
+                        description: 'mock@4545'
+                    };
+                    zephyrReporter.specStarted(spec);
+                    zephyrReporter.specDone(spec);
+                });
+            });
+
+            nockAddAttachmentBuffered.on('replied', () => {
+                setTimeout(() => {
+                    expect(browser.takeScreenshot).toHaveBeenCalled();
+                    expect(result).toBeDefined();
+                    done();
+                });
+            });
+
+        });
+
+
     });
+
+
+    describe(`suiteDone()`, () => {
+
+        it(`should do nothing if the reporter is disabled`, (done) => {
+
+            browser = {
+                getProcessedConfig: () => {
+                    return new Promise((resolve, reject) => {
+                        reject('force error');
+                    });
+                }
+            };
+
+            const zephyrReporter = ZephyrReporter({
+                projectId: 'mock',
+                zapiUrl: 'http://zapi-url.com',
+                jiraUrl: 'http://jira-url.com'
+            }, onPrepareDefer, onCompleteDefer, browser);
+
+            setTimeout(() => {
+                expect(zephyrReporter.suiteDone()).toBeUndefined();
+                done();
+            });
+
+        });
+
+
+        it(`should update the execution`, (done) => {
+
+            let result;
+
+            const nockCycle = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/cycle')
+                .reply(() => {
+                    return { id: '1212' };
+                });
+
+            const nockExecution = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .post('/execution')
+                .reply((path, res) => {
+                    return {'8888': 1};
+                });
+
+            const nockStepId = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .get('/stepResult?executionId=8888')
+                .reply((path) => {
+                    return [{
+                        stepId: '4545',
+                        id: '99'
+                    }];
+                });
+
+            const nockUpdateTestStep = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .put('/stepResult/99')
+                .reply((path, res) => {
+                    result = res;
+                });
+
+            const nockUpdateExecution = Nock('http://zapi-url.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
+                .put('/execution/8888/execute')
+                .reply((path, res) => {
+                    result = res;
+                });
+
+            const zephyrReporter = ZephyrReporter({
+                projectId: 'mock',
+                zapiUrl: 'http://zapi-url.com',
+                jiraUrl: 'http://jira-url.com',
+                screenshot: 'never'
+            }, onPrepareDefer, onCompleteDefer, browser);
+
+            nockCycle.on('replied', () => {
+                setTimeout(() => {
+                    zephyrReporter.suiteStarted({
+                        description: 'mock@123'
+                    })
+                });
+            });
+
+            nockExecution.on('replied', () => {
+                setTimeout(() => {
+                    const spec = {
+                        id: 1,
+                        status: 'failed',
+                        description: 'mock@4545'
+                    };
+                    zephyrReporter.specStarted(spec);
+                    zephyrReporter.specDone(spec);
+                });
+            });
+
+            nockUpdateTestStep.on('replied', () => {
+                setTimeout(() => {
+                    zephyrReporter.suiteDone();
+                });
+            });
+
+            nockUpdateExecution.on('replied', () => {
+                setTimeout(() => {
+                    expect(result).toEqual({ status: '2' });
+                    done();
+                });
+            });
+
+        });
+    });
+
 });
 

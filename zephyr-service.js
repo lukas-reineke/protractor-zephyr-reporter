@@ -115,9 +115,9 @@ const ZephyrService = (options) => {
                 auth(options.jiraUser, options.jiraPassword)
             ])
             .then(({body = []}) => {
-                const index = body.findIndex((step) => step.stepId === stepId);
+                const index = body.findIndex((step) => String(step.stepId) === stepId);
 
-                if (inedx === -1) {
+                if (index === -1) {
                     errorCallback(`spec ${stepId} not found`);
                 } else {
                     callback(body[index].id)

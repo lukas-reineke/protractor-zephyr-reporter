@@ -1,7 +1,7 @@
 const fs = require('fs');
 const streamBuffers = require('stream-buffers');
 
-const ZephyrReporter = (options = [], onPrepareDefer, onCompleteDefer, browser) => {
+const ZephyrReporter = (options = {}, onPrepareDefer, onCompleteDefer, browser) => {
 
     const requiredOptions = [
         'projectId',
