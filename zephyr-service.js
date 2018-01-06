@@ -39,8 +39,10 @@ const ZephyrService = (options) => {
                     'Content-Type': 'application/json'
                 }
             })
-                .use(popsicle.plugins.parse('json'))
-                .use(auth(options.jiraUser, options.jiraPassword))
+                .use([
+                    popsicle.plugins.parse('json'),
+                    auth(options.jiraUser, options.jiraPassword)
+                ])
                 .then((res) => {
                     callback(res.body.id);
                 })
@@ -86,8 +88,10 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
             .then((res) => {
                 callback(Object.keys(res.body)[0]);
             })
@@ -106,15 +110,19 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
-            .then((res) => {
-                for (let step of res.body) {
-                    if (String(step.stepId) === stepId) {
-                        callback(step.id);
-                        break;
-                    }
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
+            .then(({body = []}) => {
+                const index = body.findIndex((step) => step.stepId === stepId);
+
+                if (inedx === -1) {
+                    errorCallback(`spec ${stepId} not found`);
+                } else {
+                    callback(body[index].id)
                 }
+
             })
             .catch((error) => {
                 errorCallback(error);
@@ -132,8 +140,10 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
             .then(() => {
                 callback();
             })
@@ -153,8 +163,10 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
             .then(() => {
                 callback();
             })
