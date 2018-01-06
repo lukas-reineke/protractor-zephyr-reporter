@@ -23,9 +23,16 @@
     "Dimitri Rybak <kontakt@dimitri-rybak.de>"
   ],
   "license": "MIT",
+  "scripts": {
+    "test": "jasmine-node ."
+  },
   "dependencies": {
     "popsicle": "^9.1.0",
     "popsicle-basic-auth": "^1.0.0",
     "stream-buffers": "^3.0.1"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5",
+    "nock": "^9.1.5"
   }
 }

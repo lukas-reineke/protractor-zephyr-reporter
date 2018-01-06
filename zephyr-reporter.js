@@ -1,7 +1,7 @@
 const fs = require('fs');
 const streamBuffers = require('stream-buffers');
 
-const ZephyrReporter = (options, onPrepareDefer, onCompleteDefer, browser) => {
+const ZephyrReporter = (options = [], onPrepareDefer, onCompleteDefer, browser) => {
 
     const requiredOptions = [
         'projectId',
@@ -18,13 +18,15 @@ const ZephyrReporter = (options, onPrepareDefer, onCompleteDefer, browser) => {
     } else {
         requiredOptions.forEach((option) => {
             if (!options.hasOwnProperty(option)) {
-                console.error('required options for ZephyrReporter are missing, not doing anything.');
+                console.error(`required option '${option}' for ZephyrReporter is missing, not doing anything.`);
                 onPrepareDefer.fulfill();
                 onCompleteDefer.fulfill();
                 disabled = true;
-                return;
             }
         });
+        if (disabled) {
+            return;
+        }
     }
 
     options.zapiUrl = options.zapiUrl.replace(/\/+$/, '');
