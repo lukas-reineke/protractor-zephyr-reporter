@@ -24,7 +24,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "jasmine-node ."
+    "test": "jasmine-node ./spec"
   },
   "dependencies": {
     "popsicle": "^9.1.0",
