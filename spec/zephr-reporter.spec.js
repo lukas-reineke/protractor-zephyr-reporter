@@ -56,6 +56,10 @@ describe(`ZephyrReporter`, () => {
     });
 
     it(`should not do anything if it is disabled`, () => {
+
+        spyOn(onPrepareDefer, 'fulfill');
+        spyOn(onCompleteDefer, 'fulfill');
+
         const zephyrReporter = ZephyrReporter({
             projectId: 'mock',
             zapiUrl: 'mock',
@@ -64,6 +68,8 @@ describe(`ZephyrReporter`, () => {
         }, onPrepareDefer, onCompleteDefer, browser);
 
         expect(zephyrReporter).toBeUndefined();
+        expect(onPrepareDefer.fulfill).toHaveBeenCalled();
+        expect(onCompleteDefer.fulfill).toHaveBeenCalled();
     });
 
     it(`should return a function if all required options are met`, (done) => {
