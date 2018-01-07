@@ -1,22 +1,22 @@
 
-const buildImageName = (specId) => {
-    let imageName = './';
-    imageName += this.browser.params.imageComparison.diffFolder;
-    imageName += '/';
-    imageName += specId;
-    imageName += '-';
-    imageName += this.browser.params.imageComparison.browserName;
-    imageName += '-';
-    imageName += this.browser.params.imageComparison.browserWidth;
-    imageName += 'x';
-    imageName += this.browser.params.imageComparison.browserHeight;
-    imageName += '-dpr-';
-    imageName += this.browser.params.imageComparison.devicePixelRatio;
-    imageName += '.png';
-    return imageName;
-};
-
 module.exports = function(spec) {
+
+    const buildImageName = (specId) => {
+        let imageName = './';
+        imageName += this.browser.params.imageComparison.diffFolder;
+        imageName += '/';
+        imageName += specId;
+        imageName += '-';
+        imageName += this.browser.params.imageComparison.browserName;
+        imageName += '-';
+        imageName += this.browser.params.imageComparison.browserWidth;
+        imageName += 'x';
+        imageName += this.browser.params.imageComparison.browserHeight;
+        imageName += '-dpr-';
+        imageName += this.browser.params.imageComparison.devicePixelRatio;
+        imageName += '.png';
+        return imageName;
+    };
 
     if (this.disabled) {
         return;
@@ -82,13 +82,11 @@ module.exports = function(spec) {
                 }));
             }
 
-            Promise.all(specDonePromises).then(() => {
-                this.specPromisesResolve[spec.id]();
-            });
-
-        } else {
-            this.specPromisesResolve[spec.id]();
         }
+
+        Promise.all(specDonePromises).then(() => {
+            this.specPromisesResolve[spec.id]();
+        });
 
     }, (error) => {
         console.error(error);
