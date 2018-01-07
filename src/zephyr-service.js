@@ -39,8 +39,10 @@ const ZephyrService = (options) => {
                     'Content-Type': 'application/json'
                 }
             })
-                .use(popsicle.plugins.parse('json'))
-                .use(auth(options.jiraUser, options.jiraPassword))
+                .use([
+                    popsicle.plugins.parse('json'),
+                    auth(options.jiraUser, options.jiraPassword)
+                ])
                 .then((res) => {
                     callback(res.body.id);
                 })
@@ -86,8 +88,10 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
             .then((res) => {
                 callback(Object.keys(res.body)[0]);
             })
@@ -106,22 +110,26 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
-            .then((res) => {
-                for (let step of res.body) {
-                    if (String(step.stepId) === stepId) {
-                        callback(step.id);
-                        break;
-                    }
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
+            .then(({body = []}) => {
+                const index = body.findIndex((step) => String(step.stepId) === stepId);
+
+                if (index === -1) {
+                    errorCallback(`spec ${stepId} not found`);
+                } else {
+                    callback(body[index].id)
                 }
+
             })
             .catch((error) => {
                 errorCallback(error);
             });
     };
 
-    this.updateTestStep = (stepId, status, callback) => {
+    this.updateTestStep = (stepId, status, callback, errorCallback) => {
         popsicle.request({
             method: 'PUT',
             url: options.zapiUrl + '/stepResult/' + stepId,
@@ -132,13 +140,15 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
             .then(() => {
                 callback();
             })
             .catch((error) => {
-                throw new Error(error);
+                errorCallback(error);
             });
     };
 
@@ -153,8 +163,10 @@ const ZephyrService = (options) => {
                 'Content-Type': 'application/json'
             }
         })
-            .use(popsicle.plugins.parse('json'))
-            .use(auth(options.jiraUser, options.jiraPassword))
+            .use([
+                popsicle.plugins.parse('json'),
+                auth(options.jiraUser, options.jiraPassword)
+            ])
             .then(() => {
                 callback();
             })

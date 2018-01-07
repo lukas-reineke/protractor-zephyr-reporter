@@ -41,13 +41,14 @@ const JiraService = (options) => {
             .use(popsicle.plugins.parse('json'))
             .use(auth(options.jiraUser, options.jiraPassword))
             .then((res) => {
-                for (let i = 0; i < res.body.values.length; i++) {
-                    if (res.body.values[i].name === options.version) {
-                        return res.body.values[i].id;
-                    }
+                const index = res.body.values.findIndex((versions) => versions.name === options.version);
+
+                if (index === -1) {
+                    console.error('no version ID found.');
+                    return '-1';
+                } else {
+                    return res.body.values[index].id;
                 }
-                console.error('no version ID found.');
-                return '-1';
             })
             .catch((error) => {
                 console.error(error);
