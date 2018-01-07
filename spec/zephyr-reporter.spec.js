@@ -1,4 +1,4 @@
-const ZephyrReporter = require('../zephyr-reporter');
+const ZephyrReporter = require('../src/zephyr-reporter');
 const Nock = require('nock');
 
 describe(`ZephyrReporter`, () => {
