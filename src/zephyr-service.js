@@ -129,7 +129,7 @@ const ZephyrService = (options) => {
             });
     };
 
-    this.updateTestStep = (stepId, status, callback) => {
+    this.updateTestStep = (stepId, status, callback, errorCallback) => {
         popsicle.request({
             method: 'PUT',
             url: options.zapiUrl + '/stepResult/' + stepId,
@@ -148,7 +148,7 @@ const ZephyrService = (options) => {
                 callback();
             })
             .catch((error) => {
-                throw new Error(error);
+                errorCallback(error);
             });
     };
 
