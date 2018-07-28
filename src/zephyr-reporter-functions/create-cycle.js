@@ -8,19 +8,30 @@ module.exports = function() {
 
             this.zephyrService.createCycle(name, (cycleId) => {
                 this.globals.cycleId = cycleId;
-                this.onPrepareDefer.fulfill();
+                if (this.onPrepareDefer.resolve) {
+                    this.onPrepareDefer.resolve();
+                } else {
+                    this.onPrepareDefer.fulfill();
+                }
+
             }, (error) => {
-                console.error(error);
-                this.onPrepareDefer.fulfill();
-                this.onCompleteDefer.fulfill();
-                this.disabled = true;
+                throw new Error(error);
             });
 
         })
         .catch((error) => {
             console.error(error);
-            this.onPrepareDefer.fulfill();
-            this.onCompleteDefer.fulfill();
+            if (this.onPrepareDefer.resolve) {
+                this.onPrepareDefer.resolve();
+            } else {
+                this.onPrepareDefer.fulfill();
+            }
+
+            if (this.onCompleteDefer.resolve) {
+                this.onCompleteDefer.resolve();
+            } else {
+                this.onCompleteDefer.fulfill();
+            }
             this.disabled = true;
         });
 

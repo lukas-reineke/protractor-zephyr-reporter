@@ -9,10 +9,20 @@ module.exports = function() {
         this.zephyrService.updateExecution(
             this.globals.executionId,
             this.globals.status,
-            () => this.onCompleteDefer.fulfill(),
+            () => {
+                if (this.onCompleteDefer.resolve) {
+                    this.onCompleteDefer.resolve();
+                } else {
+                    this.onCompleteDefer.fulfill();
+                }
+            },
             (error) => {
                 console.error(error);
-                this.onCompleteDefer.fulfill();
+                if (this.onCompleteDefer.resolve) {
+                    this.onCompleteDefer.resolve();
+                } else {
+                    this.onCompleteDefer.fulfill();
+                }
             }
         );
     });

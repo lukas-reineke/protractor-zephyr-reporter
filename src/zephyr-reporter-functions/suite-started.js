@@ -11,8 +11,17 @@ module.exports = function(suite) {
         this.globals.executionId = executionId;
     }, (error) => {
         console.error(error);
-        this.onPrepareDefer.fulfill();
-        this.onCompleteDefer.fulfill();
+        if (this.onPrepareDefer.resolve) {
+            this.onPrepareDefer.resolve();
+        } else {
+            this.onPrepareDefer.fulfill();
+        }
+
+        if (this.onCompleteDefer.resolve) {
+            this.onCompleteDefer.resolve();
+        } else {
+            this.onCompleteDefer.fulfill();
+        }
         this.disabled = true;
     });
 

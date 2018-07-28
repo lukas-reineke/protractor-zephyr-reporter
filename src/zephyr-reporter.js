@@ -23,8 +23,17 @@ const ZephyrReporter = (options = {}, onPrepareDefer, onCompleteDefer, browser) 
 
     if (this.disabled) {
         console.info('ZephyrReporter is disabled, not doing anything.');
-        this.onPrepareDefer.fulfill();
-        this.onCompleteDefer.fulfill();
+        if (this.onPrepareDefer.resolve) {
+            this.onPrepareDefer.resolve();
+        } else {
+            this.onPrepareDefer.fulfill();
+        }
+
+        if (this.onCompleteDefer.resolve) {
+            this.onCompleteDefer.resolve();
+        } else {
+            this.onCompleteDefer.fulfill();
+        }
         return;
     }
 
