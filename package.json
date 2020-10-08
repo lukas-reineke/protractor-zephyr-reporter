@@ -27,7 +27,7 @@
     "test": "jasmine-node ./spec"
   },
   "dependencies": {
-    "popsicle": "^9.1.0",
+    "popsicle": "^12.1.0",
     "popsicle-basic-auth": "^1.0.0",
     "stream-buffers": "^3.0.1"
   },
